@@ -689,10 +689,8 @@ if ((! (Get-Command pkg-config -errorAction SilentlyContinue)) -or `
       }
   }
 
-$brotli_there = vcpkg list "brotli" 2>&1 | Select-String "brotli" -SimpleMatch -Quiet
-$zstd_there = vcpkg list "zstd" 2>&1 | Select-String "zstd" -SimpleMatch -Quiet
-if (-not $brotli_there) { vcpkg install brotli }
-if (-not $zstd_there) { vcpkg install zstd }
+vcpkg install brotli
+vcpkg install zstd
 
 if (($env:VCPKG_DIR) -And (Test-Path -Path "$env:VCPKG_DIR\installed")) {
     cd "$env:VCPKG_DIR\installed"
