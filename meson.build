@@ -84,7 +84,7 @@ endif
 if get_option('PISTACHE_USE_CONTENT_ENCODING_ZSTD')
 
   #Need Zstd encoder for library...
-  zstd_dep = dependency('libzstd')
+  zstd_dep = dependency('zstd', 'libzstd')
   deps_libpistache += zstd_dep
   public_deps += zstd_dep
 endif
