@@ -99,9 +99,15 @@ endif
 if get_option('PISTACHE_USE_CONTENT_ENCODING_BROTLI')
 
 	# Need Brotli encoder for library...
-	brotli_dep = dependency('brotli', modules: 'brotli::brotlienc', required: false)
+	brotli_dep = dependency('Brotli', modules: 'Brotli::brotlienc', required: false)
 	if not brotli_dep.found()
-		brotli_dep = dependency('brotli', modules: 'brotli::brotlienc_shared', required: false)
+		brotli_dep = dependency('Brotli', modules: 'Brotli::brotlienc_shared', required: false)
+	endif
+	if not brotli_dep.found()
+		brotli_dep = dependency('brotli', modules: 'Brotli::brotlienc', required: false)
+	endif
+	if not brotli_dep.found()
+		brotli_dep = dependency('brotli', modules: 'Brotli::brotlienc_shared', required: false)
 	endif
 	if not brotli_dep.found()
 		brotli_dep = dependency('libbrotlienc')
