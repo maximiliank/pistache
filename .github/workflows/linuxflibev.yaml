@@ -8,6 +8,7 @@ on:
   push:
     branches:
     - master
+    - test/linux_ci_lcov
   pull_request:
     branches:
     - master
@@ -70,19 +71,11 @@ jobs:
       # Use the following to run just a single test (e.g. http_server_test)
       # run: build/tests/run_http_server_test
 
-    - name: Install lcov v2.0 (Debian stable, GCC)
-      if: ${{ matrix.compiler == 'gcc' }}
-      run: |
-        apt-get -y install --no-install-recommends make libjson-perl libperlio-gzip-perl
-        git clone --depth 1 --branch v2.0 https://github.com/linux-test-project/lcov.git
-        cd lcov
-        make install
-        cd ..
-        rm -rf lcov
-
     - name: Coverage
       if: ${{ matrix.compiler == 'gcc' }}
       run: |
+        lcov --version
+        
         mkdir -p $HOME/.local/bin
         if [ "${{ matrix.compiler }}" = 'clang' ]; then printf 'llvm-cov gcov "$@"' > $HOME/.local/bin/cov.sh; else printf 'gcov "$@"' > $HOME/.local/bin/cov.sh; fi && chmod +x $HOME/.local/bin/cov.sh
         lcov --capture --output-file coverage.info --directory . --gcov-tool $HOME/.local/bin/cov.sh --exclude '/usr/*' --exclude '*/tests/*' --rc derive_function_end_line=0 --rc check_data_consistency=0
