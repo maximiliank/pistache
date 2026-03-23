@@ -75,10 +75,10 @@ jobs:
       if: ${{ matrix.compiler == 'gcc' }}
       run: |
         lcov --version
-        
+
         mkdir -p $HOME/.local/bin
         if [ "${{ matrix.compiler }}" = 'clang' ]; then printf 'llvm-cov gcov "$@"' > $HOME/.local/bin/cov.sh; else printf 'gcov "$@"' > $HOME/.local/bin/cov.sh; fi && chmod +x $HOME/.local/bin/cov.sh
-        lcov --capture --output-file coverage.info --directory . --gcov-tool $HOME/.local/bin/cov.sh --exclude '/usr/*' --exclude '*/tests/*' --rc derive_function_end_line=0 --rc check_data_consistency=0
+        lcov --ignore-errors inconsistent --capture --output-file coverage.info --directory . --gcov-tool $HOME/.local/bin/cov.sh --exclude '/usr/*' --exclude '*/tests/*' --rc derive_function_end_line=0 --rc check_data_consistency=0
         lcov --list coverage.info
         curl https://keybase.io/codecovsecurity/pgp_keys.asc | gpg --no-default-keyring --keyring trustedkeys.gpg --import
         curl --silent --remote-name https://uploader.codecov.io/latest/linux/codecov
