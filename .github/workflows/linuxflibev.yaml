@@ -96,7 +96,7 @@ jobs:
       run: |
         mkdir -p $HOME/.local/bin
         if [ "${{ matrix.compiler }}" = 'clang' ]; then printf 'llvm-cov gcov "$@"' > $HOME/.local/bin/cov.sh; else printf 'gcov "$@"' > $HOME/.local/bin/cov.sh; fi && chmod +x $HOME/.local/bin/cov.sh
-        lcov --capture --output-file coverage.info --directory . --gcov-tool $HOME/.local/bin/cov.sh --exclude '/usr/*' --exclude '*/tests/*' --exclude '*/subprojects/*' --rc derive_function_end_line=0 --rc check_data_consistency=0
+        lcov --capture --output-file coverage.info --directory . --gcov-tool $HOME/.local/bin/cov.sh --exclude '/usr/*' --exclude '*/tests/*' --exclude '**/subprojects/**' --rc derive_function_end_line=0 --rc check_data_consistency=0
         lcov --list coverage.info
 
     - uses: codecov/codecov-action@v5
