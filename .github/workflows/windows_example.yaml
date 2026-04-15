@@ -21,8 +21,20 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  build-windows:
+  vcpkg:
     runs-on: windows-latest
+    steps:
+      - name: vcpkg build
+        uses: johnwason/vcpkg-action@v7
+        id: vcpkg
+        with:
+          pkgs: pkgconf libevent openssl curl[openssl] brotli zstd date
+          triplet: x64-windows-release
+          token: ${{ github.token }}
+
+  build:
+    runs-on: windows-latest
+    needs: vcpkg
 
     strategy:
       fail-fast: false
@@ -38,14 +50,13 @@ jobs:
 
       - run: pip install cmake ninja meson
 
-      - name: vcpkg build
+      - name: vcpkg build (load from cache)
         uses: johnwason/vcpkg-action@v7
         id: vcpkg
         with:
           pkgs: pkgconf libevent openssl curl[openssl] brotli zstd date
           triplet: x64-windows-release
           token: ${{ github.token }}
-          cache-key: ${{ matrix.library_type }}
 
       - name: Set up MSVC environment
         uses: ilammy/msvc-dev-cmd@v1
