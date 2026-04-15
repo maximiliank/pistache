@@ -136,6 +136,7 @@ jobs:
             Write-Host "=== stderr ==="
             Get-Content $stderrLog -ErrorAction SilentlyContinue
             if ($proc.HasExited) {
+              $proc.WaitForExit()
               $exitCode = $proc.ExitCode
               $ucode = [System.BitConverter]::ToUInt32([System.BitConverter]::GetBytes([int]$exitCode), 0)
               $msg = "Server process exited prematurely (exit code $exitCode / 0x$($ucode.ToString('X8')))."
