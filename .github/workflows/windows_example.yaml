@@ -7,7 +7,7 @@ name: WindowsExample
 on:
   push:
     branches:
-    - master
+    - '**'
   pull_request:
     branches:
     - master
@@ -45,6 +45,7 @@ jobs:
           pkgs: pkgconf libevent openssl curl[openssl] brotli zstd date
           triplet: x64-windows-release
           token: ${{ github.token }}
+          cache-key: ${{ matrix.library_type }}
 
       - name: Set up MSVC environment
         uses: ilammy/msvc-dev-cmd@v1
@@ -134,11 +135,15 @@ jobs:
             Get-Content $stdoutLog -ErrorAction SilentlyContinue
             Write-Host "=== stderr ==="
             Get-Content $stderrLog -ErrorAction SilentlyContinue
-            $exitCode = $proc.ExitCode
-            $ucode = [System.BitConverter]::ToUInt32([System.BitConverter]::GetBytes($exitCode), 0)
-            $msg = "Server process exited prematurely or port 9080 not ready (exit code $exitCode / 0x$($ucode.ToString('X8')))."
-            if ($ucode.ToString('X8') -eq 'C0000135') {
-              $msg += " STATUS_DLL_NOT_FOUND: a required DLL could not be located."
+            if ($proc.HasExited) {
+              $exitCode = $proc.ExitCode
+              $ucode = [System.BitConverter]::ToUInt32([System.BitConverter]::GetBytes([int]$exitCode), 0)
+              $msg = "Server process exited prematurely (exit code $exitCode / 0x$($ucode.ToString('X8')))."
+              if ($ucode.ToString('X8') -eq 'C0000135') {
+                $msg += " STATUS_DLL_NOT_FOUND: a required DLL could not be located."
+              }
+            } else {
+              $msg = "Server process is running but port 9080 did not open within 30s."
             }
             throw $msg
           }
