@@ -21,20 +21,8 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  vcpkg:
-    runs-on: windows-latest
-    steps:
-      - name: vcpkg build
-        uses: johnwason/vcpkg-action@v7
-        id: vcpkg
-        with:
-          pkgs: pkgconf libevent openssl curl[openssl] brotli zstd date
-          triplet: x64-windows-release
-          token: ${{ github.token }}
-
   build:
     runs-on: windows-latest
-    needs: vcpkg
 
     strategy:
       fail-fast: false
@@ -56,6 +44,8 @@ jobs:
         with:
           pkgs: pkgconf libevent openssl curl[openssl] brotli zstd date
           triplet: x64-windows-release
+          cache-key: ${{ matrix.library_type }}
+          revision: master
           token: ${{ github.token }}
 
       - name: Set up MSVC environment
