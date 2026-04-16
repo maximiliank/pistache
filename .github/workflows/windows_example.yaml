@@ -24,10 +24,10 @@ jobs:
   build:
     runs-on: windows-latest
 
-    strategy:
-      fail-fast: false
-      matrix:
-        library_type: [shared, static]
+    # strategy:
+    #   fail-fast: false
+    #   matrix:
+    #     library_type: [shared, static]
 
     steps:
       - uses: actions/checkout@v6
@@ -44,7 +44,6 @@ jobs:
         with:
           pkgs: pkgconf libevent openssl curl[openssl] brotli zstd date
           triplet: x64-windows-release
-          cache-key: ${{ matrix.library_type }}
           revision: master
           token: ${{ github.token }}
 
@@ -71,7 +70,7 @@ jobs:
           -Db_coverage=false
           -Db_sanitize=none
           -Db_lundef=false
-          --default-library=${{ matrix.library_type }}
+          --default-library=shared
           --prefix="$env:ProgramFiles\pistache_distribution"
 
       - name: Build
@@ -84,7 +83,7 @@ jobs:
         run: |
           $installDir = "$env:ProgramFiles\pistache_distribution"
           $vcpkgBin   = "${{ github.workspace }}/vcpkg/installed/x64-windows-release/bin"
-          $libType    = "${{ matrix.library_type }}"
+          $libType    = "shared"
 
           if ($libType -eq 'shared') {
             $dll = Get-Item "$installDir\bin\pistache*.dll" -ErrorAction SilentlyContinue
