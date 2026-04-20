@@ -122,7 +122,7 @@ jobs:
             Get-Content $stdoutLog -ErrorAction SilentlyContinue
             Write-Host "=== stderr ==="
             Get-Content $stderrLog -ErrorAction SilentlyContinue
-            throw "Server process exited prematurely (exit code $exitCode / 0x$($exitCode.ToString('X8')))."
+            throw "Server process exited prematurely (exit code $exitCode)."
           }
           Write-Host "Server process running (PID $($proc.Id))"
 
