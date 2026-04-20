@@ -59,7 +59,6 @@ jobs:
         with:
           pkgs: ${{ env.VCPKG_PKGS }}
           triplet: x64-windows-release
-          revision: master
           token: ${{ github.token }}
 
       - name: Set up MSVC environment
