@@ -12,9 +12,6 @@ on:
     branches:
     - master
 
-env:
-  VCPKG_PKGS: pkgconf libevent openssl curl[openssl] brotli zstd date
-
 defaults:
   run:
     shell: powershell
@@ -24,20 +21,8 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  vcpkg:
-    runs-on: windows-latest
-    steps:
-      - name: vcpkg build
-        uses: johnwason/vcpkg-action@v7
-        id: vcpkg
-        with:
-          pkgs: ${{ env.VCPKG_PKGS }}
-          triplet: x64-windows-release
-          token: ${{ github.token }}
-
   build:
     runs-on: windows-latest
-    needs: vcpkg
 
     strategy:
       fail-fast: false
@@ -53,11 +38,11 @@ jobs:
 
       - run: pip install cmake ninja meson
 
-      - name: vcpkg build (load from cache)
+      - name: vcpkg build
         uses: johnwason/vcpkg-action@v7
         id: vcpkg
         with:
-          pkgs: ${{ env.VCPKG_PKGS }}
+          pkgs: pkgconf libevent openssl curl[openssl] brotli zstd date
           triplet: x64-windows-release
           token: ${{ github.token }}
 
