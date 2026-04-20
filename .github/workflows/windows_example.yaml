@@ -116,13 +116,13 @@ jobs:
 
           # Check the process is still alive
           if ($proc.HasExited) {
+            $proc.WaitForExit()
+            $exitCode = $proc.ExitCode
             Write-Host "=== stdout ==="
             Get-Content $stdoutLog -ErrorAction SilentlyContinue
             Write-Host "=== stderr ==="
             Get-Content $stderrLog -ErrorAction SilentlyContinue
-            $exitCode = $proc.ExitCode
-            $msg = "Server process exited prematurely (exit code $exitCode)."
-            throw $msg
+            throw "Server process exited prematurely (exit code $exitCode / 0x$($exitCode.ToString('X8')))."
           }
           Write-Host "Server process running (PID $($proc.Id))"
 
