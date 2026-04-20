@@ -121,11 +121,7 @@ jobs:
             Write-Host "=== stderr ==="
             Get-Content $stderrLog -ErrorAction SilentlyContinue
             $exitCode = $proc.ExitCode
-            $ucode = [System.BitConverter]::ToUInt32([System.BitConverter]::GetBytes($exitCode), 0)
-            $msg = "Server process exited prematurely (exit code $exitCode / 0x$($ucode.ToString('X8')))."
-            if ($ucode.ToString('X8') -eq 'C0000135') {
-              $msg += " STATUS_DLL_NOT_FOUND: a required DLL could not be located."
-            }
+            $msg = "Server process exited prematurely (exit code $exitCode)."
             throw $msg
           }
           Write-Host "Server process running (PID $($proc.Id))"
