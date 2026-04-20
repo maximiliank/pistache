@@ -94,14 +94,32 @@ jobs:
           if (! $exePath) { throw "runhello_server.exe not found under build\" }
           Write-Host "Using exe: $exePath"
 
-          $proc = Start-Process -FilePath $exePath -PassThru
-          $null = $proc.Handle  # cache handle so ExitCode is available after exit
-          Start-Sleep -Seconds 5
+          $stdoutLog = "hello_server_stdout.txt"
+          $stderrLog = "hello_server_stderr.txt"
+          $proc = Start-Process -FilePath $exePath -PassThru `
+                    -RedirectStandardOutput $stdoutLog `
+                    -RedirectStandardError  $stderrLog
+          $null = $proc.Handle
 
-          if ($proc.HasExited) {
-            $proc.WaitForExit()
-            throw "Server failed to start (exit code $($proc.ExitCode) / 0x$(([uint32]$proc.ExitCode).ToString('X8')))."
+          # Wait up to 30s for the server to open port 9080
+          $ready = $false
+          for ($i = 0; $i -lt 30; $i++) {
+            if ($proc.HasExited) {
+              $proc.WaitForExit()
+              Write-Host "=== Server STDOUT ==="
+              Get-Content $stdoutLog -ErrorAction SilentlyContinue
+              Write-Host "=== Server STDERR ==="
+              Get-Content $stderrLog -ErrorAction SilentlyContinue
+              throw "Server exited during startup (exit code $($proc.ExitCode))."
+            }
+            try {
+              $c = [System.Net.Sockets.TcpClient]::new('127.0.0.1', 9080)
+              $c.Close()
+              $ready = $true
+              break
+            } catch { Start-Sleep -Seconds 1 }
           }
+          if (-not $ready) { throw "Server did not open port 9080 within 30s." }
 
           try {
             $resp = Invoke-WebRequest -Uri http://localhost:9080 -UseBasicParsing -TimeoutSec 5
